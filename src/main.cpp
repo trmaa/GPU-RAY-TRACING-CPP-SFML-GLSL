@@ -1,42 +1,32 @@
-#include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Texture.hpp"
-#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 
 int main() {
-	sf::RenderWindow window;
-	window.create(sf::VideoMode(200,200),"Ray tracer");
+    sf::RenderWindow window(
+            sf::VideoMode(800, 600),
+            "Ray tracing");
 
-	sf::Image buffer;
-	buffer.create(200, 200);
-	for (int j = 0; j < buffer.getSize().y; j++) {
-		for (int i = 0; i < buffer.getSize().x; i++) {
-			buffer.setPixel(i, j, sf::Color(
-						255*i/buffer.getSize().x,
-						255*j/buffer.getSize().y, 0));
-		}
-	}
+    sf::Shader shader;
+    if (!shader.loadFromFile("./src/shaders/fragment_shader.glsl",
+                sf::Shader::Fragment)) {
+        return -1;
+    }
+    shader.setUniform("screenSize", sf::Vector2f(window.getSize()));
 
-	sf::Texture txtr;
-	txtr.loadFromImage(buffer);
-	txtr.setSmooth(true);
+    sf::RectangleShape fullscreenRect(sf::Vector2f(window.getSize().x, window.getSize().y));
+    fullscreenRect.setPosition(0, 0);
 
-	sf::Sprite screen(txtr);
-	float scale_x = (float)window.getSize().x/buffer.getSize().x;
-	float scale_y = (float)window.getSize().y/buffer.getSize().y;
-	screen.setScale(scale_x, scale_y);
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+        }
 
-	while (window.isOpen()) {
-		sf::Event ev;
-		while (window.pollEvent(ev)) {
-			if (ev.type == sf::Event::Closed) {
-				window.close();
-			}
-		}
+        window.clear();
 
-		window.clear();
-		window.draw(screen);
-		window.display();
-	}
+        window.draw(fullscreenRect, &shader);
+
+        window.display();
+    }
 }
