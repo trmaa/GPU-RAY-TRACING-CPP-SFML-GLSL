@@ -1,0 +1,5 @@
+#!/bin/bash
+
+g++ src/*.cpp -o app -Iinclude/ -Llib/ -lsfml-graphics -lsfml-window -lsfml-system
+
+./app

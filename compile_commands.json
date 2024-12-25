@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Iinclude/",
+      "-o",
+      "app",
+      "src/main.cpp"
+    ],
+    "directory": "/home/pablo/ray_tracing_gpu",
+    "file": "/home/pablo/ray_tracing_gpu/src/main.cpp",
+    "output": "/home/pablo/ray_tracing_gpu/app"
+  }
+]
