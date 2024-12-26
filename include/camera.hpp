@@ -16,7 +16,7 @@ public:
     sf::Vector3f angle() { return this->_angle; }
 
 public:
-    Camera(): _position(0,0,-2), _angle(0,0,0), _speed(3.f) {}
+    Camera(): _position(0,0,-15), _angle(0,0,0), _speed(3.f) {}
     ~Camera() = default;
 
 public:
