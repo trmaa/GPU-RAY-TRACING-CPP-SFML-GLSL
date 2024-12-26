@@ -3,6 +3,7 @@ struct Sphere {
     vec3 center;
     vec3 color;
     float roughness;
+    bool emissive;
 };
 
 float check_collision(Sphere sphere, Ray ray) {
@@ -15,7 +16,9 @@ float check_collision(Sphere sphere, Ray ray) {
     if (discriminant < 0.0) {
         return -1.0;
     } else {
-        return (-b - sqrt(discriminant)) / (2.0 * a);
+        float val1 = (-b - sqrt(discriminant)) / (2.0 * a);
+        float val2 = (-b + sqrt(discriminant)) / (2.0 * a);
+        return val1>2?val1:val2;
     }
 }
 

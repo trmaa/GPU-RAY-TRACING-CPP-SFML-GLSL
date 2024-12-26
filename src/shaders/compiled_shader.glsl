@@ -47,6 +47,7 @@ struct Sphere {
     vec3 center;
     vec3 color;
     float roughness;
+    bool emissive;
 };
 
 float check_collision(Sphere sphere, Ray ray) {
@@ -59,7 +60,9 @@ float check_collision(Sphere sphere, Ray ray) {
     if (discriminant < 0.0) {
         return -1.0;
     } else {
-        return (-b - sqrt(discriminant)) / (2.0 * a);
+        float val1 = (-b - sqrt(discriminant)) / (2.0 * a);
+        float val2 = (-b + sqrt(discriminant)) / (2.0 * a);
+        return val1>2?val1:val2;
     }
 }
 
@@ -71,6 +74,15 @@ vec3 sphere_color(Sphere s) {
     return s.color; 
 }
 
+Sphere spheres[6] = Sphere[](
+    Sphere(0.1, vec3(0, 0, 0), vec3(1, 0.2, 1), 0, true),
+    Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0.2, 0.2), 0.5, false),
+    Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0.2, 0.2, 1), 0.5, false),
+    Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0.2, 1, 0.2), 0.5, true),
+    Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0.2), 0.5, false),
+    Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0.2, 1, 1), 0, false)
+);
+
 
 float random(vec3 seed) {
     return fract(sin(dot(seed + vec3(iTime), vec3(12.9898, 78.233, 45.164))) * 43758.5453);
@@ -81,20 +93,12 @@ void main() {
     uv.y = -uv.y;
     uv.x = uv.x * screen_size.x / screen_size.y;
 
-    Ray ray = create_ray(cam_pos, cam_dir, uv);
+    Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
-    Sphere spheres[5] = Sphere[](
-        Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0.2, 0.2), 0.7),
-        Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0.2, 0.2, 1), 1),
-        Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0.2, 1, 0.2), 1),
-        Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0.2), 1),
-        Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0.2, 1, 1), 0)
-    );
-
-    vec3 final_col = vec3(0.0);
+    vec3 final_col = vec3(0.5);
     int rays_per_pixel = 6;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(1.0);
+        vec3 col = vec3(1);
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
@@ -106,7 +110,7 @@ void main() {
             Sphere hit_sphere;
             bool hit_found = false;
 
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < 6; ++i) {
                 Sphere sphere = spheres[i];
                 float t = check_collision(sphere, current_ray);
 
@@ -120,6 +124,10 @@ void main() {
             }
 
             if (!hit_found) {
+                break;
+            }
+            if (hit_sphere.emissive) {
+                col = sphere_color(hit_sphere);
                 break;
             }
 
