@@ -2,15 +2,8 @@ struct Sphere {
     float radius;
     vec3 center;
     vec3 color;
+    float roughness;
 };
-
-Sphere create_sphere(float r, vec3 c, vec3 col) {
-    Sphere sphere;
-    sphere.radius = r;
-    sphere.center = c;
-    sphere.color = col;
-    return sphere;
-}
 
 float check_collision(Sphere sphere, Ray ray) {
     vec3 oc = ray.origin - sphere.center;
