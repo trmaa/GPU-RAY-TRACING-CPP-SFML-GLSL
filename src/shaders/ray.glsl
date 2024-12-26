@@ -1,12 +1,26 @@
 struct Ray {
     vec3 origin;
     vec3 direction;
+    float far;
 };
 
-Ray create_ray(vec3 o, vec3 d) {
+Ray create_ray(vec3 o, vec3 angle_c, vec2 id) {
     Ray ray;
+    ray.far = 2;
+
     ray.origin = o;
-    ray.direction = normalize(d);
+
+    vec3 angle_o = vec3(
+        atan(id.y/ray.far),
+        atan(id.x/ray.far),
+        0);
+    vec3 angle_f = angle_o + angle_c;
+
+    ray.direction = normalize(vec3(
+            cos(angle_f.x)*sin(angle_f.y),
+            sin(angle_f.x),
+            cos(angle_f.x)*cos(angle_f.y)));
+
     return ray;
 }
 

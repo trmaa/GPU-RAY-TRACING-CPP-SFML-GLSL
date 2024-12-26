@@ -3,12 +3,26 @@
 struct Ray {
     vec3 origin;
     vec3 direction;
+    float far;
 };
 
-Ray create_ray(vec3 o, vec3 d) {
+Ray create_ray(vec3 o, vec3 angle_c, vec2 id) {
     Ray ray;
+    ray.far = 2;
+
     ray.origin = o;
-    ray.direction = normalize(d);
+
+    vec3 angle_o = vec3(
+        atan(id.y/ray.far),
+        atan(id.x/ray.far),
+        0);
+    vec3 angle_f = angle_o + angle_c;
+
+    ray.direction = normalize(vec3(
+            cos(angle_f.x)*sin(angle_f.y),
+            sin(angle_f.x),
+            cos(angle_f.x)*cos(angle_f.y)));
+
     return ray;
 }
 
@@ -52,7 +66,7 @@ void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;
     uv.y = -uv.y;
 
-    Ray ray = create_ray(cam_pos, vec3(uv, 1.0));
+    Ray ray = create_ray(cam_pos, cam_dir, uv);
     Sphere sphere = create_sphere(1.0, vec3(0.0, 0.0, 0.0));
 
     vec3 col = vec3(0.0);

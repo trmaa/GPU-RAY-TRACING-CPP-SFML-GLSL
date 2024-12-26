@@ -12,7 +12,7 @@ void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;
     uv.y = -uv.y;
 
-    Ray ray = create_ray(cam_pos, vec3(uv, 1.0));
+    Ray ray = create_ray(cam_pos, cam_dir, uv);
     Sphere sphere = create_sphere(1.0, vec3(0.0, 0.0, 0.0));
 
     vec3 col = vec3(0.0);
