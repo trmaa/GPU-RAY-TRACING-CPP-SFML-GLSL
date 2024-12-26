@@ -1,5 +1,10 @@
 #version 330 core
 
+uniform vec2 screen_size;
+
+uniform vec3 cam_pos;
+uniform vec3 cam_dir;
+
 struct Ray {
     vec3 origin;
     vec3 direction;
@@ -8,7 +13,7 @@ struct Ray {
 
 Ray create_ray(vec3 o, vec3 angle_c, vec2 id) {
     Ray ray;
-    ray.far = 2;
+    ray.far = 4*screen_size.x/1920;
 
     ray.origin = o;
 
@@ -56,11 +61,6 @@ float check_collision(Sphere sphere, Ray ray) {
     }
 }
 
-
-uniform vec2 screen_size;
-
-uniform vec3 cam_pos;
-uniform vec3 cam_dir;
 
 void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;

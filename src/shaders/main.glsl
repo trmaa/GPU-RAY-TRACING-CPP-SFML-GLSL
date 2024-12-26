@@ -1,12 +1,12 @@
 #version 330 core
 
-#include "ray.glsl"
-#include "sphere.glsl"
-
 uniform vec2 screen_size;
 
 uniform vec3 cam_pos;
 uniform vec3 cam_dir;
+
+#include "ray.glsl"
+#include "sphere.glsl"
 
 void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;

@@ -6,7 +6,7 @@ struct Ray {
 
 Ray create_ray(vec3 o, vec3 angle_c, vec2 id) {
     Ray ray;
-    ray.far = 2;
+    ray.far = 4*screen_size.x/1920;
 
     ray.origin = o;
 

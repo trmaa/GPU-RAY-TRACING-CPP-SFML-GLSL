@@ -39,6 +39,7 @@ public:
 		sf::RectangleShape s(sf::Vector2f(this->_width, this->_height));
 		this->_screen = s;
 		this->_screen.setPosition(0, 0);
+		this->_screen.setScale(16,9);
 	}
 
 	void repaint(const float& dt, Camera camera) {
