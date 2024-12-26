@@ -30,7 +30,7 @@ void main() {
         closest_t = -1.0;
         vec3 closest_normal = vec3(0.0);
         vec3 hit_point = vec3(0.0);
-        float attenuation = 1-bounce/4;
+        float attenuation = 1-bounce/5;
 
         Sphere hit_sphere;
         bool hit_found = false;
@@ -52,7 +52,7 @@ void main() {
             break; 
         }
         
-        float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))), 0.6, 1.0);
+        float light_intensity = clamp((dot(closest_normal, normalize(vec3(-1)))+0.1), 0.65, 1);
         col = attenuation * sphere_color(hit_sphere)* light_intensity * col;
 
         ray.origin = hit_point + closest_normal * 0.01;
