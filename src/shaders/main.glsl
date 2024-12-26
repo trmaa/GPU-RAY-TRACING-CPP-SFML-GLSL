@@ -20,17 +20,17 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv);
 
     Sphere spheres[5] = Sphere[](
-        Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0, 0), 0),
-        Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0, 0, 1), 1),
-        Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0, 1, 0), 1),
-        Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0), 0.3),
-        Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0, 1, 1), 0.5)
+        Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0.2, 0.2), 0),
+        Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0.2, 0.2, 1), 1),
+        Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0.2, 1, 0.2), 1),
+        Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0.2), 0.3),
+        Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0.2, 1, 1), 0.5)
     );
 
     vec3 final_col = vec3(0.0);
     int rays_per_pixel = 6;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(1.0); // Reset per ray
+        vec3 col = vec3(1.0);
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
@@ -60,7 +60,7 @@ void main() {
             }
 
             float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))) + 0.1, 0.7, 1.0);
-            col *= attenuation * light_intensity * sphere_color(hit_sphere);
+            col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere);
 
             vec3 random_vec = vec3(
                 random(hit_point + vec3(j, 1.0, 0.0)),
