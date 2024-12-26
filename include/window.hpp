@@ -29,7 +29,7 @@ public:
 		this->_font.loadFromFile("./bin/fonts/pixelmix.ttf");
 		this->_fps_text.setFont(this->_font);
 		this->_fps_text.setCharacterSize(50);
-		this->_fps_text.setFillColor(sf::Color::White);
+		this->_fps_text.setFillColor(sf::Color::Black);
 		this->_fps_text.setPosition(10, 10);
 
 		std::system("python3 ./src/shaders/compiler.py");

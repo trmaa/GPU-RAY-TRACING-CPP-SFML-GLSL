@@ -16,21 +16,24 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv);
 
     Sphere spheres[5] = Sphere[](
-        Sphere(1.0, vec3(-2.0, 0.0, -5.0)),
-        Sphere(0.8, vec3(0.0, 1.0, -4.0)),
-        Sphere(1.2, vec3(2.0, -1.0, -6.0)),
-        Sphere(0.6, vec3(1.0, 1.0, -3.0)),
-        Sphere(1.0, vec3(-1.5, -0.5, -4.5))
+        Sphere(1.0, vec3(-2.0, 0.0, -5.0), vec3(1, 0, 0)),
+        Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0, 0, 1)),
+        Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0, 1, 0)),
+        Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0)),
+        Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0, 1, 1))
     );
 
-    vec3 col = vec3(0.0);
-    vec3 attenuation = vec3(1.0);
+    vec3 col = vec3(1);
     float closest_t;
 
     for (int bounce = 0; bounce < 4; bounce++) {
         closest_t = -1.0;
         vec3 closest_normal = vec3(0.0);
         vec3 hit_point = vec3(0.0);
+        float attenuation = 1-bounce/4;
+
+        Sphere hit_sphere;
+        bool hit_found = false;
 
         for (int i = 0; i < 5; ++i) {
             Sphere sphere = spheres[i];
@@ -40,15 +43,17 @@ void main() {
                 closest_t = t;
                 hit_point = ray_at(ray, t);
                 closest_normal = normalize(sphere_normal(sphere, hit_point));
+                hit_sphere = sphere;
+                hit_found = true;
             }
         }
 
-        if (closest_t < 0.0) {
-            break;
+        if (!hit_found) {
+            break; 
         }
-
-        col += attenuation * (closest_normal * 0.5 + 0.5);
-        attenuation *= 0.5;
+        
+        float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))), 0.6, 1.0);
+        col = attenuation * sphere_color(hit_sphere)* light_intensity * col;
 
         ray.origin = hit_point + closest_normal * 0.01;
         ray.direction = reflect(ray.direction, closest_normal);
