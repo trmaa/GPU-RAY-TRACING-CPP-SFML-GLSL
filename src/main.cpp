@@ -1,20 +1,16 @@
 #include <SFML/Graphics.hpp>
+#include <cstdlib>
+#include <string>
+#include "window.hpp"
+#include "camera.hpp"
 
 int main() {
-    sf::RenderWindow window(
-            sf::VideoMode(800, 600),
-            "Ray tracing");
+    Window window(1920, 1080, "Ray tracing");
+    Camera camera;
 
-    sf::Shader shader;
-    if (!shader.loadFromFile("./src/shaders/fragment_shader.glsl",
-                sf::Shader::Fragment)) {
-        return -1;
-    }
-    shader.setUniform("screenSize", sf::Vector2f(window.getSize()));
-
-    sf::RectangleShape fullscreenRect(sf::Vector2f(window.getSize().x, window.getSize().y));
-    fullscreenRect.setPosition(0, 0);
-
+    sf::Clock clck;
+    sf::Time elapsed;
+    float dt;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -22,11 +18,10 @@ int main() {
                 window.close();
             }
         }
+        elapsed = clck.restart();
+        dt = elapsed.asSeconds();
 
-        window.clear();
-
-        window.draw(fullscreenRect, &shader);
-
-        window.display();
+        camera.move(dt, event);
+        window.repaint(dt, camera);
     }
 }
