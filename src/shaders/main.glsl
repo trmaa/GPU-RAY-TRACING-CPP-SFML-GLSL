@@ -9,7 +9,7 @@ uniform float iTime;
 #include "sphere.glsl"
 
 float random(vec3 seed) {
-    return fract(sin(dot(seed/* + vec3(iTime)*/, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+    return fract(sin(dot(seed + vec3(iTime), vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
 void main() {
@@ -20,11 +20,11 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv);
 
     Sphere spheres[5] = Sphere[](
-        Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0.2, 0.2), 0),
+        Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0.2, 0.2), 0.7),
         Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0.2, 0.2, 1), 1),
         Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0.2, 1, 0.2), 1),
-        Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0.2), 0.3),
-        Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0.2, 1, 1), 0.5)
+        Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0.2), 1),
+        Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0.2, 1, 1), 0)
     );
 
     vec3 final_col = vec3(0.0);
@@ -59,7 +59,7 @@ void main() {
                 break;
             }
 
-            float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))) + 0.1, 0.7, 1.0);
+            float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))) + 0.2, 0.7, 1.0);
             col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere);
 
             vec3 random_vec = vec3(
