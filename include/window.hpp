@@ -22,9 +22,9 @@ public:
 	const int& height() { return this->_height; }
 
 public:
-	Window(int w, int h, std::string title):
-		_width(w), _height(h), _title(title) {
-		this->create(sf::VideoMode(this->_width, this->_height), this->_title);
+	Window(std::string title):
+		_title(title) {
+		this->create(sf::VideoMode(1280, 720), this->_title);
 
 		this->_font.loadFromFile("./bin/fonts/pixelmix.ttf");
 		this->_fps_text.setFont(this->_font);
@@ -36,14 +36,14 @@ public:
 		this->_shader.loadFromFile("./src/shaders/compiled_shader.glsl", sf::Shader::Fragment);
 		this->_shader.setUniform("screen_size", sf::Vector2f(this->getSize()));
 
-		sf::RectangleShape s(sf::Vector2f(this->_width, this->_height));
+		sf::RectangleShape s(sf::Vector2f(this->getSize().x, this->getSize().y));
 		this->_screen = s;
 		this->_screen.setPosition(0, 0);
-		this->_screen.setScale(16,9);
+		this->_screen.setScale(1,1);
 	}
 
 	void repaint(const float& dt, Camera camera) {
-        this->clear();
+		this->clear();
 
 		this->_shader.setUniform("cam_pos", camera.position());
 		this->_shader.setUniform("cam_dir", camera.angle());

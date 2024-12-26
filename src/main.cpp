@@ -5,7 +5,7 @@
 #include "camera.hpp"
 
 int main() {
-    Window window(1920, 1080, "Ray tracing");
+    Window window("Ray tracing");
     Camera camera;
 
     sf::Clock clck;

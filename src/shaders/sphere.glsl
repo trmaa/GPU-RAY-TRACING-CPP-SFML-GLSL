@@ -23,3 +23,7 @@ float check_collision(Sphere sphere, Ray ray) {
         return (-b - sqrt(discriminant)) / (2.0 * a);
     }
 }
+
+vec3 sphere_normal(Sphere s, vec3 hitp) {
+    return normalize(hitp - s.center); 
+}
