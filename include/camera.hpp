@@ -16,7 +16,7 @@ public:
     sf::Vector3f angle() { return this->_angle; }
 
 public:
-    Camera(): _position(0,0,-15), _angle(0,0,0), _speed(3.f) {}
+    Camera(): _position(0,0,-15), _angle(0,0,0), _speed(8.f) {}
     ~Camera() = default;
 
 public:
@@ -46,16 +46,16 @@ public:
             _position.y += fixedSpeed;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)) {
-            _angle.y += 0.02f;
+            _angle.y += 0.1f*fixedSpeed;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-            _angle.y -= 0.02f;
+            _angle.y -= 0.1f*fixedSpeed;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-            _angle.x += 0.02f;
+            _angle.x += 0.1f*fixedSpeed;
         }
         if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(40))) {
-            _angle.x -= 0.02f;
+            _angle.x -= 0.1f*fixedSpeed;
         }
     }
 };

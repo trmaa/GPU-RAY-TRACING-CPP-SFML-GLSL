@@ -13,7 +13,7 @@ struct Ray {
 
 Ray create_ray(vec3 o, vec3 angle_c, vec2 id) {
     Ray ray;
-    ray.far = 4*screen_size.x/1920;
+    ray.far = 10*screen_size.x/1920;
 
     ray.origin = o;
 
@@ -85,7 +85,7 @@ Sphere spheres[6] = Sphere[](
 
 
 float random(vec3 seed) {
-    return fract(sin(dot(seed + vec3(iTime), vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+    return fract(sin(dot(seed /*+ vec3(iTime)*/, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
 void main() {
