@@ -1,6 +1,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include "SFML/Window/Keyboard.hpp"
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
@@ -23,6 +24,9 @@ public:
 
     void move(const float& dt) {
         float fixedSpeed = _speed * dt;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+            fixedSpeed *= 10;
+        }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             _position.x += std::sin(_angle.y) * fixedSpeed;

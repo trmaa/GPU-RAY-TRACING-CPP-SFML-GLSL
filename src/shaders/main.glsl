@@ -10,7 +10,7 @@ uniform float iTime;
 #include "scene.glsl"
 
 float random(vec3 seed) {
-    return fract(sin(dot(seed + vec3(iTime), vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+    return fract(sin(dot(seed /*+ vec3(iTime)*/, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
 void main() {
@@ -23,7 +23,8 @@ void main() {
     vec3 final_col = vec3(0.5);
     int rays_per_pixel = 16;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(0.2, 0.3, 0.4);
+        vec3 col = vec3(0);
+        vec3 sky_col = vec3(0);
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
@@ -45,10 +46,12 @@ void main() {
                     closest_normal = normalize(sphere_normal(sphere, hit_point));
                     hit_sphere = sphere;
                     hit_found = true;
+                    col = sphere_color(hit_sphere, closest_normal);
                 }
             }
 
             if (!hit_found) {
+                col = sky_col;
                 break;
             }
             if (hit_sphere.emissive) {
