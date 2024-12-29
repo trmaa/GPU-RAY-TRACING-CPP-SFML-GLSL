@@ -86,9 +86,9 @@ vec3 sphere_color(Sphere s, vec3 normal) {
 }
 
 Sphere spheres[3] = Sphere[](
-    Sphere(300, vec3(0, -320.0, 0), vec3(1, 1, 1), 0.7, false, 0),
-    Sphere(20, vec3(0, 0, 0), vec3(1, 1, 1), 0.7, false, 0),
-    Sphere(300, vec3(0, 500, -500), vec3(1, 0, 0), 0, true, 0)
+    Sphere(30, vec3(0, -32.0, 0), vec3(1, 1, 1), 1, false, 0),
+    Sphere(2, vec3(0, 0, 0), vec3(1, 1, 1), 1, false, 0),
+    Sphere(30, vec3(0, 50, -50), vec3(1, 1, 1), 0, true, 0)
 );
 
 
@@ -104,9 +104,9 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0.5);
-    int rays_per_pixel = 6;
+    int rays_per_pixel = 16;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(0.6,0.7,1);
+        vec3 col = vec3(0.2, 0.3, 0.4);
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
