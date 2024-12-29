@@ -48,7 +48,10 @@ struct Sphere {
     vec3 color;
     float roughness;
     bool emissive;
+    int textureID;
 };
+
+uniform sampler2D textures[1];
 
 float check_collision(Sphere sphere, Ray ray) {
     vec3 oc = ray.origin - sphere.center;
@@ -62,35 +65,40 @@ float check_collision(Sphere sphere, Ray ray) {
     } else {
         float val1 = (-b - sqrt(discriminant)) / (2.0 * a);
         float val2 = (-b + sqrt(discriminant)) / (2.0 * a);
-        return val1>2?val1:val2;
+        return val1 > 2.0 ? val1 : val2;
     }
 }
 
 vec3 sphere_normal(Sphere s, vec3 hitp) {
-    return normalize(hitp - s.center); 
+    return normalize(hitp - s.center);
 }
 
-vec3 sphere_color(Sphere s) {
-    return s.color; 
+vec2 normal_to_uv(vec3 normal) {
+    float u = 0.5 + atan(normal.z, normal.x) / (2.0 * 3.141592653589793);
+    float v = 0.5 - asin(normal.y) / 3.141592653589793;
+    return vec2(u, v);
 }
 
-Sphere spheres[6] = Sphere[](
-    Sphere(0.1, vec3(0, 0, 0), vec3(1, 0.2, 1), 0, false),
-    Sphere(1.0, vec3(-2.0, 1.7, -5.0), vec3(1, 0.2, 0.2), 0.7, false),
-    Sphere(0.8, vec3(0.0, 1.0, -4.0), vec3(0.2, 0.2, 1), 0.7, false),
-    Sphere(1.2, vec3(2.0, -1.0, -6.0), vec3(0.2, 1, 0.2), 0.7, true),
-    Sphere(0.6, vec3(1.0, 1.0, -3.0), vec3(1, 1, 0.2), 0.7, false),
-    Sphere(1.0, vec3(-1.5, -0.5, -4.5), vec3(0.2, 1, 1), 0, false)
+vec3 sphere_color(Sphere s, vec3 normal) {
+    vec2 uv = normal_to_uv(normal);
+    vec3 texture_color = texture(textures[0], uv).rgb;
+    return s.color;//*normalize(texture_color);
+}
+
+Sphere spheres[3] = Sphere[](
+    Sphere(300, vec3(0, -320.0, 0), vec3(1, 1, 1), 0.7, false, 0),
+    Sphere(20, vec3(0, 0, 0), vec3(1, 1, 1), 0.7, false, 0),
+    Sphere(300, vec3(0, 500, -500), vec3(1, 0, 0), 0, true, 0)
 );
 
 
 float random(vec3 seed) {
-    return fract(sin(dot(seed /*+ vec3(iTime)*/, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+    return fract(sin(dot(seed + vec3(iTime), vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
 void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;
-    uv.y = -uv.y;
+    //uv.y = -uv.y;
     uv.x = uv.x * screen_size.x / screen_size.y;
 
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
@@ -98,7 +106,7 @@ void main() {
     vec3 final_col = vec3(0.5);
     int rays_per_pixel = 6;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(1);
+        vec3 col = vec3(0.6,0.7,1);
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
@@ -110,7 +118,7 @@ void main() {
             Sphere hit_sphere;
             bool hit_found = false;
 
-            for (int i = 0; i < 6; ++i) {
+            for (int i = 0; i < 3; ++i) {
                 Sphere sphere = spheres[i];
                 float t = check_collision(sphere, current_ray);
 
@@ -127,12 +135,12 @@ void main() {
                 break;
             }
             if (hit_sphere.emissive) {
-                col = sphere_color(hit_sphere);
+                col = sphere_color(hit_sphere, closest_normal);
                 break;
             }
 
-            float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))) + 0.2, 0.7, 1.0);
-            col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere);
+            float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1, 1, -1))) + 0.2, 0.7, 1.0);
+            col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere, closest_normal);
 
             vec3 random_vec = vec3(
                 random(hit_point + vec3(j, 1.0, 0.0)),

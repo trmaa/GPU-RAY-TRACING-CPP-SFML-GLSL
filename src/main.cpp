@@ -11,6 +11,7 @@ int main() {
     sf::Clock clck;
     sf::Time elapsed;
     float dt;
+    sf::Vector2i lastMousePosition = sf::Mouse::getPosition(window);
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -21,7 +22,13 @@ int main() {
         elapsed = clck.restart();
         dt = elapsed.asSeconds();
 
-        camera.move(dt, event);
+        camera.move(dt);
+
+        sf::Vector2i currentMousePosition = sf::Mouse::getPosition(window);
+        sf::Vector2i mouseDelta = currentMousePosition - lastMousePosition;
+        lastMousePosition = currentMousePosition;
+        camera.handleMouseMovement(mouseDelta);
+
         window.repaint(dt, camera);
     }
 }

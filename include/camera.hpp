@@ -10,53 +10,56 @@ private:
     sf::Vector3f _angle;
 
     float _speed;
+    float _mouseSensitivity;
 
 public:
-    sf::Vector3f position() { return this->_position; }
-    sf::Vector3f angle() { return this->_angle; }
+    sf::Vector3f position() const { return _position; }
+    sf::Vector3f angle() const { return _angle; }
 
 public:
-    Camera(): _position(0,0,-15), _angle(0,0,0), _speed(8.f) {}
+    Camera()
+        : _position(0, 0, -15), _angle(0, 0, 0), _speed(8.f), _mouseSensitivity(0.2f) {}
     ~Camera() = default;
 
-public:
-    void move(const float& dt, const sf::Event& event) {
+    void move(const float& dt) {
         float fixedSpeed = _speed * dt;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             _position.x += std::sin(_angle.y) * fixedSpeed;
             _position.z += std::cos(_angle.y) * fixedSpeed;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             _position.x -= std::sin(_angle.y) * fixedSpeed;
             _position.z -= std::cos(_angle.y) * fixedSpeed;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             _position.x += std::sin(_angle.y - 3.14159f / 2) * fixedSpeed;
             _position.z += std::cos(_angle.y - 3.14159f / 2) * fixedSpeed;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            _position.x -= std::sin(_angle.y - 3.14159f / 2) * fixedSpeed;
-            _position.z -= std::cos(_angle.y - 3.14159f / 2) * fixedSpeed;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            _position.x += std::sin(_angle.y + 3.14159f / 2) * fixedSpeed;
+            _position.z += std::cos(_angle.y + 3.14159f / 2) * fixedSpeed;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
-            _position.y -= fixedSpeed;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)) {
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             _position.y += fixedSpeed;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)) {
-            _angle.y += 0.1f*fixedSpeed;
-        }
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-            _angle.y -= 0.1f*fixedSpeed;
+            _position.y -= fixedSpeed;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-            _angle.x += 0.1f*fixedSpeed;
-        }
-        if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(40))) {
-            _angle.x -= 0.1f*fixedSpeed;
-        }
+    }
+
+    void handleMouseMovement(const sf::Vector2i& mouseDelta) {
+        _angle.y += mouseDelta.x * _mouseSensitivity * 0.0174533f;
+        _angle.x -= mouseDelta.y * _mouseSensitivity * 0.0174533f;
+
+        const float maxPitch = 89.0f * 0.0174533f;
+        if (_angle.x > maxPitch) _angle.x = maxPitch;
+        if (_angle.x < -maxPitch) _angle.x = -maxPitch;
     }
 };
 

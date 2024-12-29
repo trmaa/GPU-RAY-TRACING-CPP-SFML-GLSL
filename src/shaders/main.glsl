@@ -10,12 +10,12 @@ uniform float iTime;
 #include "scene.glsl"
 
 float random(vec3 seed) {
-    return fract(sin(dot(seed /*+ vec3(iTime)*/, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+    return fract(sin(dot(seed + vec3(iTime), vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
 void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;
-    uv.y = -uv.y;
+    //uv.y = -uv.y;
     uv.x = uv.x * screen_size.x / screen_size.y;
 
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
@@ -23,7 +23,7 @@ void main() {
     vec3 final_col = vec3(0.5);
     int rays_per_pixel = 6;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(1);
+        vec3 col = vec3(0.6,0.7,1);
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
@@ -35,7 +35,7 @@ void main() {
             Sphere hit_sphere;
             bool hit_found = false;
 
-            for (int i = 0; i < 6; ++i) {
+            for (int i = 0; i < 3; ++i) {
                 Sphere sphere = spheres[i];
                 float t = check_collision(sphere, current_ray);
 
@@ -52,12 +52,12 @@ void main() {
                 break;
             }
             if (hit_sphere.emissive) {
-                col = sphere_color(hit_sphere);
+                col = sphere_color(hit_sphere, closest_normal);
                 break;
             }
 
-            float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1))) + 0.2, 0.7, 1.0);
-            col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere);
+            float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1, 1, -1))) + 0.2, 0.7, 1.0);
+            col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere, closest_normal);
 
             vec3 random_vec = vec3(
                 random(hit_point + vec3(j, 1.0, 0.0)),

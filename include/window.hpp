@@ -2,6 +2,7 @@
 #define WINDOW_HPP
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <string>
 #include "camera.hpp"
 
@@ -34,6 +35,10 @@ public:
 
 		std::system("python3 ./src/shaders/compiler.py");
 		this->_shader.loadFromFile("./src/shaders/compiled_shader.glsl", sf::Shader::Fragment);
+		sf::Texture texture;
+		texture.loadFromFile("./bin/textures/wood.jpg");
+		texture.setSmooth(true);
+		this->_shader.setUniform("textures[0]", texture);
 		this->_shader.setUniform("screen_size", sf::Vector2f(this->getSize()));
 
 		sf::RectangleShape s(sf::Vector2f(this->getSize().x, this->getSize().y));
@@ -42,7 +47,7 @@ public:
 		this->_screen.setScale(1,1);
 	}
 
-	void repaint(const float& dt, Camera camera) {
+	void repaint(float dt, Camera camera) {
 		this->clear();
 
 		this->_shader.setUniform("cam_pos", camera.position());

@@ -4,7 +4,10 @@ struct Sphere {
     vec3 color;
     float roughness;
     bool emissive;
+    int textureID;
 };
+
+uniform sampler2D textures[1];
 
 float check_collision(Sphere sphere, Ray ray) {
     vec3 oc = ray.origin - sphere.center;
@@ -18,14 +21,22 @@ float check_collision(Sphere sphere, Ray ray) {
     } else {
         float val1 = (-b - sqrt(discriminant)) / (2.0 * a);
         float val2 = (-b + sqrt(discriminant)) / (2.0 * a);
-        return val1>2?val1:val2;
+        return val1 > 2.0 ? val1 : val2;
     }
 }
 
 vec3 sphere_normal(Sphere s, vec3 hitp) {
-    return normalize(hitp - s.center); 
+    return normalize(hitp - s.center);
 }
 
-vec3 sphere_color(Sphere s) {
-    return s.color; 
+vec2 normal_to_uv(vec3 normal) {
+    float u = 0.5 + atan(normal.z, normal.x) / (2.0 * 3.141592653589793);
+    float v = 0.5 - asin(normal.y) / 3.141592653589793;
+    return vec2(u, v);
+}
+
+vec3 sphere_color(Sphere s, vec3 normal) {
+    vec2 uv = normal_to_uv(normal);
+    vec3 texture_color = texture(textures[0], uv).rgb;
+    return s.color;//*normalize(texture_color);
 }
