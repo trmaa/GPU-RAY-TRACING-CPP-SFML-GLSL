@@ -7,11 +7,11 @@
 int main() {
     Window window("Ray tracing");
     Camera camera;
+    camera.lock_mouse(window);
 
     sf::Clock clck;
     sf::Time elapsed;
     float dt;
-    sf::Vector2i lastMousePosition = sf::Mouse::getPosition(window);
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -23,11 +23,7 @@ int main() {
         dt = elapsed.asSeconds();
 
         camera.move(dt);
-
-        sf::Vector2i currentMousePosition = sf::Mouse::getPosition(window);
-        sf::Vector2i mouseDelta = currentMousePosition - lastMousePosition;
-        lastMousePosition = currentMousePosition;
-        camera.handleMouseMovement(mouseDelta);
+        camera.handle_mouse_movement(window);
 
         window.repaint(dt, camera);
     }

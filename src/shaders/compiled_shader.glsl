@@ -85,10 +85,11 @@ vec3 sphere_color(Sphere s, vec3 normal) {
     return s.color;//*normalize(texture_color);
 }
 
-Sphere spheres[3] = Sphere[](
-    Sphere(30, vec3(0, -32.0, 0), vec3(1, 1, 1), 1, false, 0),
-    Sphere(2, vec3(0, 0, 0), vec3(1, 1, 1), 1, false, 0),
-    Sphere(30, vec3(0, 50, -50), vec3(1, 1, 1), 0, true, 0)
+Sphere spheres[4] = Sphere[](
+    Sphere(4, vec3(20, 0, 0), vec3(1, 0, 0), 0, false, 0),
+    Sphere(30, vec3(0, -32.0, 0), vec3(0.5, 1, 0.1), 1, false, 0),
+    Sphere(1.9, vec3(0, 0, 0), vec3(1, 1, 0.2), 1, false, 0),
+    Sphere(30, vec3(20, 50, 50), vec3(1), 0, true, 0)
 );
 
 
@@ -104,22 +105,25 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0.5);
-    int rays_per_pixel = 6;
+    int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = vec3(0);
         vec3 sky_col = vec3(0);
+        vec3 col = sky_col;
+        vec3 first_col = sky_col;
         Ray current_ray = ray;
 
         for (int bounce = 0; bounce < 4; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal = vec3(0.0);
             vec3 hit_point = vec3(0.0);
+            vec3 first_hit_col = vec3(0.0);
             float attenuation = 1.0 - float(bounce) / 4.0;
 
             Sphere hit_sphere;
             bool hit_found = false;
-
-            for (int i = 0; i < 3; ++i) {
+    
+            int sphere_amount = 4;
+            for (int i = 0; i < sphere_amount; ++i) {
                 Sphere sphere = spheres[i];
                 float t = check_collision(sphere, current_ray);
 
@@ -130,20 +134,23 @@ void main() {
                     hit_sphere = sphere;
                     hit_found = true;
                     col = sphere_color(hit_sphere, closest_normal);
+                    if (bounce == 0) {
+                        first_col = col;
+                    }
                 }
             }
 
             if (!hit_found) {
-                col = sky_col;
+                col *= sky_col;
                 break;
             }
             if (hit_sphere.emissive) {
-                col = sphere_color(hit_sphere, closest_normal);
+                col = first_col * sphere_color(hit_sphere, closest_normal);
                 break;
             }
 
             float light_intensity = clamp(dot(closest_normal, normalize(vec3(-1, 1, -1))) + 0.2, 0.7, 1.0);
-            col = normalize(col) * attenuation * light_intensity * sphere_color(hit_sphere, closest_normal);
+            col = attenuation * light_intensity * (first_col * sphere_color(hit_sphere, closest_normal));
 
             vec3 random_vec = vec3(
                 random(hit_point + vec3(j, 1.0, 0.0)),

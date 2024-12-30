@@ -25,7 +25,7 @@ public:
 public:
 	Window(std::string title):
 		_title(title) {
-		this->create(sf::VideoMode(1280, 720), this->_title);
+		this->create(sf::VideoMode(1280, 720), this->_title, sf::Style::None);
 
 		this->_font.loadFromFile("./bin/fonts/pixelmix.ttf");
 		this->_fps_text.setFont(this->_font);
