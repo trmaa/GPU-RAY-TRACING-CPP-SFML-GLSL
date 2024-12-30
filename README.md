@@ -1,5 +1,7 @@
 # GPU RAY TRACER
 
+![](./bin/screenshots/7.png)
+![](./bin/screenshots/6.png)
 ![](./bin/screenshots/5.png)
 ![](./bin/screenshots/4.png)
 ![](./bin/screenshots/3.png)
