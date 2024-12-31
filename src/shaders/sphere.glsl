@@ -37,6 +37,6 @@ vec2 normal_to_uv(vec3 normal) {
 
 vec3 sphere_color(Sphere s, vec3 normal) {
     vec2 uv = normal_to_uv(normal);
-    vec3 texture_color = texture(textures[0], uv).rgb;
-    return s.color;//*normalize(texture_color);
+    vec3 texture_color = texture(log_texture, uv).rgb;
+    return s.color;//texture_color;
 }

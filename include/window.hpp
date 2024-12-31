@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
+#include "SFML/Graphics/Image.hpp"
+#include "SFML/Graphics/Texture.hpp"
 #include "camera.hpp"
 
 class Window: public sf::RenderWindow {
@@ -53,6 +55,9 @@ public:
 		this->_shader.setUniform("cam_pos", camera.position());
 		this->_shader.setUniform("cam_dir", camera.angle());
 		this->_shader.setUniform("iTime", dt);
+		sf::Texture textur;
+		textur.loadFromFile("./bin/textures/logs.jpg");
+		this->_shader.setUniform("log_texture", textur);
         this->draw(this->_screen, &this->_shader);
 
 		this->_fps_text.setString("fps: "+std::to_string((int)(1.f/dt)));

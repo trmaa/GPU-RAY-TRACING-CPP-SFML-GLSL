@@ -5,6 +5,8 @@ uniform vec3 cam_pos;
 uniform vec3 cam_dir;
 uniform float iTime;
 
+uniform sampler2D log_texture;
+
 struct Ray {
     vec3 origin;
     vec3 direction;
@@ -81,14 +83,15 @@ vec2 normal_to_uv(vec3 normal) {
 
 vec3 sphere_color(Sphere s, vec3 normal) {
     vec2 uv = normal_to_uv(normal);
-    vec3 texture_color = texture(textures[0], uv).rgb;
-    return s.color;//*normalize(texture_color);
+    vec3 texture_color = texture(log_texture, uv).rgb;
+    return s.color;//texture_color;
 }
 
-Sphere spheres[4] = Sphere[](
-    Sphere(4, vec3(20, 0, 0), vec3(1, 0, 0), 0, false, 0),
+const int sphere_amount = 4;
+Sphere spheres[sphere_amount] = Sphere[](
+    Sphere(4, vec3(20, 0, 0), vec3(1, 0.1, 0.1), -0.1, false, 0),
     Sphere(30, vec3(0, -32.0, 0), vec3(0.5, 1, 0.1), 1, false, 0),
-    Sphere(1.9, vec3(0, 0, 0), vec3(1, 1, 0.2), 1, false, 0),
+    Sphere(1.9, vec3(0, 0, 0), vec3(1), 1, false, 0),
     Sphere(30, vec3(20, 50, 50), vec3(1), 0, true, 0)
 );
 
@@ -104,8 +107,8 @@ void main() {
 
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
-    vec3 final_col = vec3(0.5);
-    int rays_per_pixel = 4;
+    vec3 final_col = vec3(0);
+    int rays_per_pixel = 8;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 sky_col = vec3(0);
         vec3 col = sky_col;
@@ -122,7 +125,6 @@ void main() {
             Sphere hit_sphere;
             bool hit_found = false;
     
-            int sphere_amount = 4;
             for (int i = 0; i < sphere_amount; ++i) {
                 Sphere sphere = spheres[i];
                 float t = check_collision(sphere, current_ray);
@@ -141,7 +143,11 @@ void main() {
             }
 
             if (!hit_found) {
-                col *= sky_col;
+                if (bounce == 0) {
+                    col = sky_col;
+                } else {
+                    col = first_col * sky_col;
+                }
                 break;
             }
             if (hit_sphere.emissive) {
@@ -153,12 +159,13 @@ void main() {
             col = attenuation * light_intensity * (first_col * sphere_color(hit_sphere, closest_normal));
 
             vec3 random_vec = vec3(
-                random(hit_point + vec3(j, 1.0, 0.0)),
-                random(hit_point + vec3(j, 0.0, 1.0)),
-                random(hit_point + vec3(j, 0.0, 0.0))
+                random(hit_point + vec3(j,0,0)),
+                random(hit_point + vec3(j,1,0)),
+                random(hit_point + vec3(j,0,1))
             );
-            vec3 roughness_offset = normalize(random_vec - vec3(0.5)) * hit_sphere.roughness;
-            current_ray = cast_ray(hit_point + closest_normal * 0.01, reflect(current_ray.direction, closest_normal) + roughness_offset);
+            vec3 roughness_offset = normalize(random_vec*2 - vec3(1)) * hit_sphere.roughness;
+            vec3 reflected_dir = reflect(current_ray.direction, closest_normal);
+            current_ray = cast_ray(hit_point + closest_normal * 0.01, reflected_dir + roughness_offset);
         }
 
         final_col += col;
