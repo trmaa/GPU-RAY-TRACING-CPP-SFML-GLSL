@@ -66,12 +66,10 @@ void main() {
                 t = check_collision(light, current_ray);
 
                 if (t > 0.0 && (closest_t < 0.0 || t < closest_t)) {
-                    if (bounce == 0) {
-                        closest_t = t;
-                        light_found = true;
-                        hit_found = true;
-                        col = light.color;
-                    } 
+                    closest_t = t;
+                    light_found = true;
+                    hit_found = true;
+                    col = light.color;
                 }
             }
 

@@ -111,7 +111,7 @@ void main() {
 
     vec3 final_col = vec3(0);
     vec3 sky_col = vec3(0);
-    int rays_per_pixel = 12;
+    int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
         vec3 first_col = col;
@@ -153,12 +153,10 @@ void main() {
                 t = check_collision(light, current_ray);
 
                 if (t > 0.0 && (closest_t < 0.0 || t < closest_t)) {
-                    if (bounce == 0) {
-                        closest_t = t;
-                        light_found = true;
-                        hit_found = true;
-                        col = light.color;
-                    } 
+                    closest_t = t;
+                    light_found = true;
+                    hit_found = true;
+                    col = light.color;
                 }
             }
 
