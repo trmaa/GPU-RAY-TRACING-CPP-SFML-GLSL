@@ -108,10 +108,9 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0);
-    vec3 light_col = vec3(1);
     int rays_per_pixel = 6;
     for (int j = 0; j < rays_per_pixel; j++) {
-        vec3 col = light_col;
+        vec3 col = vec3(0);
         vec3 first_col = col;
         Ray current_ray = ray;
 
@@ -146,8 +145,6 @@ void main() {
             if (!hit_found) {
                 if (bounce == 0) {
                     col = vec3(0);
-                } else {
-                    col = first_col * light_col;
                 }
                 break;
             }
@@ -159,6 +156,8 @@ void main() {
             float light_distance = length(light_position - hit_point);
             float intensity = dot(normalize(closest_normal), normalize(ray_to_light.direction));
             bool got_light = false;
+            
+            vec3 light_col = vec3(1);
             for (int i = 0; i < sphere_amount; i++) {
                 Sphere sphere = spheres[i];
                 float t = check_collision(sphere, ray_to_light);
