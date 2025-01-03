@@ -93,7 +93,7 @@ Sphere spheres[sphere_amount] = Sphere[](
 
 const int light_amount = 2;
 Sphere lights[light_amount] = Sphere[](
-    Sphere(2, vec3(30,10,20), vec3(1), 0),
+    Sphere(2, vec3(20,15,10), vec3(1), 0),
     Sphere(2, vec3(-20,40,20), vec3(1, 0.5, 0.5), 0)
 );
 
@@ -110,7 +110,7 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0);
-    vec3 sky_col = vec3(0);
+    vec3 sky_col = vec3(0, 1, 1);
     int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
@@ -174,6 +174,7 @@ void main() {
 
             vec3 light_col = vec3(1);
 
+            bool got_light = false;
             float shadow_bright = 1.0;
             vec3 ilumination = vec3(0);
             float intensity = 0.0;
@@ -192,7 +193,7 @@ void main() {
                     ilumination += sphere_color(light, closest_normal) * dot_product;  
                 }
 
-                bool got_light = false;
+                got_light = false;
                 for (int i = 0; i < sphere_amount; i++) {
                     Sphere sphere = spheres[i];
                     float t = check_collision(sphere, ray_to_light);
@@ -200,13 +201,9 @@ void main() {
                     if (t > 0.0 && t < light_distance) {
                         got_light = true;
                         if (hit_sphere != sphere) {
-                            shadow_bright = 0.5;
+                            shadow_bright = 0.2;
                         }
                     }
-                }
-
-                if (length(sky_col) > length(light_col)) {
-                    ilumination *= sky_col;
                 }
             }
 
@@ -215,6 +212,7 @@ void main() {
 // SET THE COLOR
 
             col = first_col * sphere_color(hit_sphere, closest_normal);
+            col = mix(col, sky_col, 0.2);
             
 //BOUNCE
 

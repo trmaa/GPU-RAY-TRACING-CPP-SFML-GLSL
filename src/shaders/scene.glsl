@@ -8,6 +8,6 @@ Sphere spheres[sphere_amount] = Sphere[](
 
 const int light_amount = 2;
 Sphere lights[light_amount] = Sphere[](
-    Sphere(2, vec3(30,10,20), vec3(1), 0),
+    Sphere(2, vec3(20,15,10), vec3(1), 0),
     Sphere(2, vec3(-20,40,20), vec3(1, 0.5, 0.5), 0)
 );
