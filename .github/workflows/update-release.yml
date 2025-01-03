@@ -16,13 +16,37 @@ jobs:
     - name: Create a ZIP archive of the source code
       run: zip -r source-code.zip . -x '*.git*'
 
+    - name: Get the latest tag
+      id: get-latest-tag
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const tags = await github.rest.repos.listTags({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          if (tags.data.length === 0) {
+            core.setOutput("tag_name", "v0.1.0");
+          } else {
+            const latestTag = tags.data[0].name;
+            const versionParts = latestTag.replace("v", "").split(".");
+            versionParts[2] = (parseInt(versionParts[2] || "0", 10) + 1).toString();
+            core.setOutput("tag_name", `v${versionParts.join(".")}`);
+          }
+
+    - name: Create a new tag
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag ${{ steps.get-latest-tag.outputs.tag_name }}
+        git push origin ${{ steps.get-latest-tag.outputs.tag_name }}
+
     - name: Create or update release
       uses: softprops/action-gh-release@v1
       with:
         files: source-code.zip
-        tag_name: v0.1.0
+        tag_name: ${{ steps.get-latest-tag.outputs.tag_name }}
         draft: false
         prerelease: false
-        verbose: true  # Enables verbose logging
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
