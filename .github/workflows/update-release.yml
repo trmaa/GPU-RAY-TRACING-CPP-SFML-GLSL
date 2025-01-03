@@ -16,25 +16,24 @@ jobs:
     - name: Create a ZIP archive of the source code
       run: zip -r source-code.zip . -x '*.git*'
 
-    - name: Get the latest release
-      id: get-release
+    - name: Get the latest tag
+      id: get-latest-tag
       uses: actions/github-script@v6
       with:
         script: |
-          const releases = await github.rest.repos.listReleases({
+          const tags = await github.rest.repos.listTags({
             owner: context.repo.owner,
             repo: context.repo.repo,
           });
-          const latestRelease = releases.data.find(r => !r.draft && !r.prerelease);
-          core.setOutput("release_id", latestRelease?.id || null);
+          const latestTag = tags.data[0]?.name || 'v0.1.0'; // Default to 'v0.1.0' if no tags exist
+          core.setOutput("tag_name", latestTag);
 
     - name: Create or update release
       uses: softprops/action-gh-release@v1
       with:
         files: source-code.zip
-        release_id: ${{ steps.get-release.outputs.release_id }}
+        tag_name: ${{ steps.get-latest-tag.outputs.tag_name }}
         draft: false
         prerelease: false
-        overwrite: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
