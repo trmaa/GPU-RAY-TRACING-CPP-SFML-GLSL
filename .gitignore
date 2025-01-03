@@ -2,3 +2,6 @@ compile_commands.json
 lib/
 include/SFML/
 .cache/
+
+.git/
+.github/
