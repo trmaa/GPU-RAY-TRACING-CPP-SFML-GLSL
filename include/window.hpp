@@ -2,10 +2,7 @@
 #define WINDOW_HPP
 
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include <string>
-#include "SFML/Graphics/Image.hpp"
-#include "SFML/Graphics/Texture.hpp"
 #include "camera.hpp"
 
 class Window: public sf::RenderWindow {
@@ -37,10 +34,9 @@ public:
 
 		std::system("python3 ./src/shaders/compiler.py");
 		this->_shader.loadFromFile("./src/shaders/compiled_shader.glsl", sf::Shader::Fragment);
-		sf::Texture texture;
-		texture.loadFromFile("./bin/textures/wood.jpg");
-		texture.setSmooth(true);
-		this->_shader.setUniform("textures[0]", texture);
+		sf::Texture textur;
+		textur.loadFromFile("./bin/textures/logs.jpg");
+		this->_shader.setUniform("log_texture", textur);
 		this->_shader.setUniform("screen_size", sf::Vector2f(this->getSize()));
 
 		sf::RectangleShape s(sf::Vector2f(this->getSize().x, this->getSize().y));
@@ -55,9 +51,6 @@ public:
 		this->_shader.setUniform("cam_pos", camera.position());
 		this->_shader.setUniform("cam_dir", camera.angle());
 		this->_shader.setUniform("iTime", dt);
-		sf::Texture textur;
-		textur.loadFromFile("./bin/textures/logs.jpg");
-		this->_shader.setUniform("log_texture", textur);
         this->draw(this->_screen, &this->_shader);
 
 		this->_fps_text.setString("fps: "+std::to_string((int)(1.f/dt)));
