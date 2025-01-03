@@ -3,11 +3,7 @@ struct Sphere {
     vec3 center;
     vec3 color;
     float roughness;
-    bool emissive;
-    int textureID;
 };
-
-uniform sampler2D textures[1];
 
 float check_collision(Sphere sphere, Ray ray) {
     vec3 oc = ray.origin - sphere.center;
@@ -38,5 +34,5 @@ vec2 normal_to_uv(vec3 normal) {
 vec3 sphere_color(Sphere s, vec3 normal) {
     vec2 uv = normal_to_uv(normal);
     vec3 texture_color = texture(log_texture, uv).rgb;
-    return s.color;//texture_color;
+    return s.color;
 }

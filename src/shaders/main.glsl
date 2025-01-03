@@ -23,13 +23,16 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0);
-    int rays_per_pixel = 6;
+    vec3 sky_col = vec3(0);
+    int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
         vec3 first_col = col;
         Ray current_ray = ray;
 
-        int bounces = 6;
+//SEE FOR SPHERES OR LIGHTS
+
+        int bounces = 4;
         for (int bounce = 0; bounce < bounces; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal;
@@ -39,10 +42,12 @@ void main() {
 
             Sphere hit_sphere;
             bool hit_found = false;
+            bool light_found = false;
     
+            float t;
             for (int i = 0; i < sphere_amount; ++i) {
                 Sphere sphere = spheres[i];
-                float t = check_collision(sphere, current_ray);
+                t = check_collision(sphere, current_ray);
 
                 if (t > 0.0 && (closest_t < 0.0 || t < closest_t)) {
                     closest_t = t;
@@ -56,37 +61,78 @@ void main() {
                     }
                 }
             }
+            for (int i = 0; i < light_amount; ++i) {
+                Sphere light = lights[i];
+                t = check_collision(light, current_ray);
+
+                if (t > 0.0 && (closest_t < 0.0 || t < closest_t)) {
+                    if (bounce == 0) {
+                        closest_t = t;
+                        light_found = true;
+                        hit_found = true;
+                        col = light.color;
+                    } 
+                }
+            }
 
             if (!hit_found) {
                 if (bounce == 0) {
-                    col = vec3(0);
+                    col = sky_col;
                 }
                 break;
             }
+            if (light_found) {
+                break;
+            }
+
+//SEE FOR SHADOWS
+
+            vec3 light_col = vec3(1);
 
             float shadow_bright = 1.0;
-            vec3 light_position = vec3(-50.0, 70.0, -50.0);
-            vec3 light_dir = normalize(light_position - hit_point);
-            Ray ray_to_light = cast_ray(hit_point + closest_normal * 0.01, light_dir);
-            float light_distance = length(light_position - hit_point);
-            float intensity = dot(normalize(closest_normal), normalize(ray_to_light.direction));
-            bool got_light = false;
-            
-            vec3 light_col = vec3(1);
-            for (int i = 0; i < sphere_amount; i++) {
-                Sphere sphere = spheres[i];
-                float t = check_collision(sphere, ray_to_light);
+            vec3 ilumination = vec3(0);
+            float intensity = 0.0;
 
-                if (t > 0.0 && t < light_distance) {
-                    got_light = true;
-                    shadow_bright = 0.0;
-                    break;
+            for (int j = 0; j < light_amount; j++) {
+                Sphere light = lights[j];
+                vec3 light_dir = normalize(light.center - hit_point);
+                Ray ray_to_light = cast_ray(hit_point + closest_normal * 0.01, light_dir);
+                float light_distance = length(light.center - hit_point);
+
+                float dot_product = dot(normalize(closest_normal), normalize(ray_to_light.direction));
+                dot_product = max(dot_product, 0.0);
+
+                if (dot_product > 0.0) {
+                    intensity += dot_product;
+                    ilumination += sphere_color(light, closest_normal) * dot_product;  
+                }
+
+                bool got_light = false;
+                for (int i = 0; i < sphere_amount; i++) {
+                    Sphere sphere = spheres[i];
+                    float t = check_collision(sphere, ray_to_light);
+
+                    if (t > 0.0 && t < light_distance) {
+                        got_light = true;
+                        if (hit_sphere != sphere) {
+                            shadow_bright = 0.5;
+                        }
+                    }
+                }
+
+                if (length(sky_col) > length(light_col)) {
+                    ilumination *= sky_col;
                 }
             }
- 
-            first_col *= shadow_bright * intensity * attenuation;
+
+            first_col *= shadow_bright * ilumination * intensity * attenuation;
+
+// SET THE COLOR
+
             col = first_col * sphere_color(hit_sphere, closest_normal);
             
+//BOUNCE
+
             vec3 random_vec = vec3(
                 random(hit_point + vec3(j,0,0)),
                 random(hit_point + vec3(j,1,0)),
