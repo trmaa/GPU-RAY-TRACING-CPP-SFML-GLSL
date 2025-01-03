@@ -1,0 +1,24 @@
+name: Update Release
+
+on:
+  push:
+    branches:
+      - main  # Replace 'main' with your default branch name if different
+
+jobs:
+  update-release:
+    runs-on: arch-linux-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Create a ZIP archive of the source code
+      run: zip -r source-code.zip . -x '*.git*' # Exclude Git files
+
+    - name: Upload the release asset
+      uses: softprops/action-gh-release@v1
+      with:
+        files: source-code.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
