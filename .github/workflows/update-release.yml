@@ -1,0 +1,40 @@
+name: Create or Update Release
+
+on:
+  push:
+    branches:
+      - main  # Replace with your branch name
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Create a ZIP archive of the source code
+      run: zip -r source-code.zip . -x '*.git*' # Exclude Git files
+
+    - name: Get the latest release
+      id: get-release
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const release = await github.repos.getLatestRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          }).catch(() => null);
+          core.setOutput("release_id", release?.data?.id || null);
+
+    - name: Create or update release
+      id: create-release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: source-code.zip
+        release_id: ${{ steps.get-release.outputs.release_id }}
+        draft: false
+        prerelease: false
+        overwrite: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
