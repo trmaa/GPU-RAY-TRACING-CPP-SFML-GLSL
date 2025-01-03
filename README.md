@@ -3,6 +3,9 @@
 `./build` to build and run.
 If you are on windows, you might replace the lib/ directory to your compatible version and place all the necessary .dlls at the root.
 
+![](./bin/screenshots/10.png)
+![](./bin/screenshots/9.png)
+![](./bin/screenshots/8.png)
 ![](./bin/screenshots/7.png)
 ![](./bin/screenshots/6.png)
 ![](./bin/screenshots/5.png)
