@@ -37,6 +37,8 @@ public:
 		this->_shader.loadFromFile("./src/shaders/compiled_shader.glsl", sf::Shader::Fragment);
 		sf::Texture textur;
 		textur.loadFromFile("./bin/textures/logs.jpg");
+		textur.setRepeated(false);
+		textur.setSmooth(true);
 		this->_shader.setUniform("log_texture", textur);
 		this->_shader.setUniform("screen_size", sf::Vector2f(this->getSize()));
 

@@ -83,6 +83,55 @@ vec3 sphere_color(Sphere s, vec3 normal) {
     return s.color;
 }
 
+struct Triangle {
+    vec3 p1;
+    vec3 p2;
+    vec3 p3;
+    vec3 color;
+    float roughness;
+};
+
+vec3 triangle_normal(Triangle triangle, Ray ray) {
+    float dotp = dot(cross(triangle.p2, triangle.p3), ray.direction);
+    if (dotp > 0) {
+        return cross(triangle.p3, triangle.p2);
+    }
+    return cross(triangle.p2, triangle.p3);
+}
+
+float check_collision(Triangle triangle, Ray ray) {
+    float denominator = dot(ray.direction, triangle_normal(triangle, ray));
+
+    if (abs(denominator) > 0) { 
+        vec3 diff = triangle.p1 - ray.origin;
+        float t = dot(diff, triangle_normal(triangle, ray)) / denominator;
+        
+        vec3 hitp = ray_at(ray, t);
+        
+        vec3 v0 = triangle.p2;
+        vec3 v1 = triangle.p3;
+        vec3 v2 = hitp - triangle.p1;
+
+        float d00 = dot(v0, v0);
+        float d01 = dot(v0, v1);
+        float d11 = dot(v1, v1);
+        float d20 = dot(v2, v0);
+        float d21 = dot(v2, v1);
+        float denom = d00 * d11 - d01 * d01;
+
+        float v = (d11 * d20 - d01 * d21) / denom;
+        float w = (d00 * d21 - d01 * d20) / denom;
+        float u = 1.0 - v - w;
+
+        bool cond = (u >= 0.0) && (v >= 0.0) && (w >= 0.0);
+        if (cond && t >= 0.0) {
+            return t;
+        }
+    }
+
+    return -1.0;
+}
+
 const int sphere_amount = 4;
 Sphere spheres[sphere_amount] = Sphere[](
     Sphere(4, vec3(20, 0, 0), vec3(1, 0.1, 0.1), 0),
@@ -91,9 +140,14 @@ Sphere spheres[sphere_amount] = Sphere[](
     Sphere(30, vec3(20, 50, 50), vec3(1), 0)
 );
 
+const int triangle_amount = 1;
+Triangle trianglez[triangle_amount] = Triangle[](
+    Triangle(vec3(-10,-2,-2),vec3(5),vec3(5, 0, 5),vec3(1),0)
+);
+
 const int light_amount = 1;
 Sphere lights[light_amount] = Sphere[](
-    Sphere(5, vec3(-100,100,-100), vec3(1, 0.8, 0.5), 0)
+    Sphere(5, vec3(100,100,-100), vec3(1), 0)
 );
 
 
@@ -109,7 +163,7 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0);
-    vec3 sky_col = vec3(0, 0.1, 0.1);
+    vec3 sky_col = vec3(0.2, 0.3, 0.4);
     int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
@@ -127,6 +181,10 @@ void main() {
             float attenuation = 1.0 - float(bounce) / float(bounces);
 
             Sphere hit_sphere;
+            bool sphere_is_hit = false;
+            Triangle hit_triangle;
+            bool triangle_is_hit = false;
+
             bool hit_found = false;
             bool light_found = false;
     
@@ -140,8 +198,28 @@ void main() {
                     hit_point = ray_at(current_ray, t);
                     closest_normal = normalize(sphere_normal(sphere, hit_point));
                     hit_sphere = sphere;
+                    sphere_is_hit = true;
+                    triangle_is_hit = false;
                     hit_found = true;
                     col = sphere_color(hit_sphere, closest_normal);
+                    if (bounce == 0) {
+                        first_col = col;
+                    }
+                }
+            }
+            for (int i = 0; i < triangle_amount; ++i) {
+                Triangle triangle = trianglez[i];
+                t = check_collision(triangle, current_ray);
+
+                if (t > 0.0 && (closest_t < 0.0 || t < closest_t)) {
+                    closest_t = t;
+                    hit_point = ray_at(current_ray, t);
+                    closest_normal = normalize(triangle_normal(triangle, current_ray));
+                    hit_triangle = triangle;
+                    triangle_is_hit = true;
+                    sphere_is_hit = false;
+                    hit_found = true;
+                    col = triangle.color;
                     if (bounce == 0) {
                         first_col = col;
                     }
@@ -174,39 +252,52 @@ void main() {
 
             vec3 light_col = vec3(1);
 
-            bool got_light = false;
             float shadow_bright = 1.0;
             vec3 ilumination = vec3(0);
-
+            
             for (int j = 0; j < light_amount; j++) {
                 Sphere light = lights[j];
                 vec3 light_dir = normalize(light.center - hit_point);
                 Ray ray_to_light = cast_ray(hit_point + closest_normal * 0.01, light_dir);
                 float light_distance = length(light.center - hit_point);
-                
-                float day_light = (sky_col.x + sky_col.y + sky_col.z)/3;
 
+                float day_light = (sky_col.x + sky_col.y + sky_col.z) / 3.0;
                 float dot_product = dot(normalize(closest_normal), normalize(ray_to_light.direction));
-                if (day_light > 0) {
+                if (day_light > 0.0) {
                     dot_product += day_light;
-                    dot_product /= 2;
+                    dot_product /= 2.0;
                 }
 
                 if (dot_product > 0.0) {
-                    ilumination += sphere_color(light, closest_normal) * dot_product;  
+                    ilumination += sphere_color(light, closest_normal) * dot_product;
                 }
 
-                got_light = false;
+                bool in_shadow = false;
+
                 for (int i = 0; i < sphere_amount; i++) {
                     Sphere sphere = spheres[i];
                     float t = check_collision(sphere, ray_to_light);
 
-                    if (t > 0.0 && t < light_distance) {
-                        got_light = true;
-                        if (hit_sphere != sphere) {
-                            shadow_bright = day_light;
+                    if (t > 0.0 && t < light_distance && sphere != hit_sphere) {
+                        in_shadow = true;
+                        break;
+                    }
+                }
+
+                if (!in_shadow) {
+                    for (int i = 0; i < triangle_amount; i++) {
+                        Triangle triangle = trianglez[i];
+                        float t = check_collision(triangle, ray_to_light);
+
+                        if (t > 0.0 && t < light_distance) {
+                            in_shadow = true;
+                            break;
                         }
                     }
+                }
+
+                if (in_shadow) {
+                    shadow_bright = day_light;
                 }
             }
 
@@ -214,7 +305,11 @@ void main() {
 
 // SET THE COLOR
 
-            col = first_col * sphere_color(hit_sphere, closest_normal);
+            if (sphere_is_hit) {
+                col = first_col * sphere_color(hit_sphere, closest_normal);
+            } else if (triangle_is_hit) {
+                col = first_col * hit_triangle.color;
+            }
             col = mix(col, sky_col, 0.2);
             
 //BOUNCE
@@ -224,7 +319,13 @@ void main() {
                 random(hit_point + vec3(j,1,0)),
                 random(hit_point + vec3(j,0,1))
             );
-            vec3 roughness_offset = normalize(random_vec*2 - vec3(1)) * hit_sphere.roughness;
+
+            vec3 roughness_offset;
+            if (sphere_is_hit) {
+                roughness_offset = normalize(random_vec*2 - vec3(1)) * hit_sphere.roughness;
+            } else if (triangle_is_hit) {
+                roughness_offset = normalize(random_vec*2 - vec3(1)) * hit_triangle.roughness;
+            }
             vec3 reflected_dir = reflect(current_ray.direction, closest_normal);
             current_ray = cast_ray(hit_point + closest_normal * 0.01, reflected_dir + roughness_offset);
         }

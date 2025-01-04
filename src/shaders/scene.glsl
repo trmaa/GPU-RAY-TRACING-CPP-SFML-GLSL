@@ -6,7 +6,12 @@ Sphere spheres[sphere_amount] = Sphere[](
     Sphere(30, vec3(20, 50, 50), vec3(1), 0)
 );
 
+const int triangle_amount = 1;
+Triangle trianglez[triangle_amount] = Triangle[](
+    Triangle(vec3(-10,-2,-2),vec3(5),vec3(5, 0, 5),vec3(1),0)
+);
+
 const int light_amount = 1;
 Sphere lights[light_amount] = Sphere[](
-    Sphere(5, vec3(-100,100,-100), vec3(1, 0.8, 0.5), 0)
+    Sphere(5, vec3(100,100,-100), vec3(1), 0)
 );
