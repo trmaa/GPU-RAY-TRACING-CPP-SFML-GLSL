@@ -23,7 +23,7 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0);
-    vec3 sky_col = vec3(0, 1, 1);
+    vec3 sky_col = vec3(0, 0.1, 0.1);
     int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
@@ -32,7 +32,7 @@ void main() {
 
 //SEE FOR SPHERES OR LIGHTS
 
-        int bounces = 4;
+        int bounces = 6;
         for (int bounce = 0; bounce < bounces; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal;
@@ -75,6 +75,7 @@ void main() {
 
             if (!hit_found) {
                 if (bounce == 0) {
+                    //col = vec3(ray.direction.x, ray.direction.y, ray.direction.z);
                     col = sky_col;
                 }
                 break;
@@ -90,19 +91,22 @@ void main() {
             bool got_light = false;
             float shadow_bright = 1.0;
             vec3 ilumination = vec3(0);
-            float intensity = 0.0;
 
             for (int j = 0; j < light_amount; j++) {
                 Sphere light = lights[j];
                 vec3 light_dir = normalize(light.center - hit_point);
                 Ray ray_to_light = cast_ray(hit_point + closest_normal * 0.01, light_dir);
                 float light_distance = length(light.center - hit_point);
+                
+                float day_light = (sky_col.x + sky_col.y + sky_col.z)/3;
 
                 float dot_product = dot(normalize(closest_normal), normalize(ray_to_light.direction));
-                dot_product = max(dot_product, 0.0);
+                if (day_light > 0) {
+                    dot_product += day_light;
+                    dot_product /= 2;
+                }
 
                 if (dot_product > 0.0) {
-                    intensity += dot_product;
                     ilumination += sphere_color(light, closest_normal) * dot_product;  
                 }
 
@@ -114,13 +118,13 @@ void main() {
                     if (t > 0.0 && t < light_distance) {
                         got_light = true;
                         if (hit_sphere != sphere) {
-                            shadow_bright = 0.2;
+                            shadow_bright = day_light;
                         }
                     }
                 }
             }
 
-            first_col *= shadow_bright * ilumination * intensity * attenuation;
+            first_col *= shadow_bright * ilumination * attenuation;
 
 // SET THE COLOR
 

@@ -25,6 +25,7 @@ public:
 	Window(std::string title):
 		_title(title) {
 		this->create(sf::VideoMode(1280, 720), this->_title, sf::Style::None);
+		this->setFramerateLimit(60);
 
 		this->_font.loadFromFile("./bin/fonts/pixelmix.ttf");
 		this->_fps_text.setFont(this->_font);
@@ -53,7 +54,7 @@ public:
 		this->_shader.setUniform("iTime", dt);
         this->draw(this->_screen, &this->_shader);
 
-		this->_fps_text.setString("fps: "+std::to_string((int)(1.f/dt)));
+		this->_fps_text.setString("fps: "+std::to_string(1 + (int)(1.f/dt)) + " (hz)");
         this->draw(this->_fps_text);
 
         this->display();
