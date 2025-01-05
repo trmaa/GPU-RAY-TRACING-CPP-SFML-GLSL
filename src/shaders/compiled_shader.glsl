@@ -159,18 +159,18 @@ Sphere lights[light_amount] = Sphere[](
 
 const int triangle_amount = 12;
 Triangle trianglez[triangle_amount] = Triangle[](
-    Triangle(vec3(-3.0,-1.0,1.0), vec3(0.0,2.0,0.0), vec3(0.0,2.0,-2.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-3.0,-1.0,1.0), vec3(0.0,2.0,-2.0), vec3(0.0,0.0,-2.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-3.0,-1.0,-1.0), vec3(0.0,2.0,0.0), vec3(2.0,2.0,0.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-3.0,-1.0,-1.0), vec3(2.0,2.0,0.0), vec3(2.0,0.0,0.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-1.0,-1.0,-1.0), vec3(0.0,2.0,0.0), vec3(0.0,2.0,2.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-1.0,-1.0,-1.0), vec3(0.0,2.0,2.0), vec3(0.0,0.0,2.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-1.0,1.0,-1.0), vec3(-2.0,0.0,0.0), vec3(-2.0,0.0,2.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-1.0,1.0,-1.0), vec3(-2.0,0.0,2.0), vec3(0.0,0.0,2.0), vec3(1, 1, 0), 1),
     Triangle(vec3(-1.0,-1.0,1.0), vec3(0.0,2.0,0.0), vec3(-2.0,2.0,0.0), vec3(1, 1, 0), 1),
     Triangle(vec3(-1.0,-1.0,1.0), vec3(-2.0,2.0,0.0), vec3(-2.0,0.0,0.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-3.0,-1.0,1.0), vec3(0.0,2.0,0.0), vec3(0.0,2.0,-2.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-3.0,-1.0,1.0), vec3(0.0,2.0,-2.0), vec3(0.0,0.0,-2.0), vec3(1, 1, 0), 1),
     Triangle(vec3(-3.0,-1.0,-1.0), vec3(2.0,0.0,0.0), vec3(2.0,0.0,2.0), vec3(1, 1, 0), 1),
     Triangle(vec3(-3.0,-1.0,-1.0), vec3(2.0,0.0,2.0), vec3(0.0,0.0,2.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-1.0,1.0,-1.0), vec3(-2.0,0.0,0.0), vec3(-2.0,0.0,2.0), vec3(1, 1, 0), 1),
-    Triangle(vec3(-1.0,1.0,-1.0), vec3(-2.0,0.0,2.0), vec3(0.0,0.0,2.0), vec3(1, 1, 0), 1)
+    Triangle(vec3(-1.0,-1.0,-1.0), vec3(0.0,2.0,0.0), vec3(0.0,2.0,2.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-1.0,-1.0,-1.0), vec3(0.0,2.0,2.0), vec3(0.0,0.0,2.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-3.0,-1.0,-1.0), vec3(0.0,2.0,0.0), vec3(2.0,2.0,0.0), vec3(1, 1, 0), 1),
+    Triangle(vec3(-3.0,-1.0,-1.0), vec3(2.0,2.0,0.0), vec3(2.0,0.0,0.0), vec3(1, 1, 0), 1)
 );
 
 
@@ -187,7 +187,7 @@ void main() {
 
     vec3 final_col = vec3(0);
     vec3 sky_col = vec3(0);
-    int rays_per_pixel = 6;
+    int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
         vec3 first_col = col;
@@ -195,7 +195,7 @@ void main() {
 
 //SEE FOR SPHERES OR LIGHTS
 
-        int bounces = 2;
+        int bounces = 3;
         for (int bounce = 0; bounce < bounces; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal;

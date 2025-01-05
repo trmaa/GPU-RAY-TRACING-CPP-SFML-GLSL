@@ -1,7 +1,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include "SFML/Window/Keyboard.hpp"
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
