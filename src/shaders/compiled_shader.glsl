@@ -187,7 +187,7 @@ void main() {
 
     vec3 final_col = vec3(0);
     vec3 sky_col = vec3(0);
-    int rays_per_pixel = 4;
+    int rays_per_pixel = 6;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
         vec3 first_col = col;
@@ -285,6 +285,7 @@ void main() {
                 float light_distance = length(light.center - hit_point);
 
                 float day_light = (sky_col.x + sky_col.y + sky_col.z) / 3.0;
+
                 float dot_product = dot(normalize(closest_normal), normalize(ray_to_light.direction));
                 if (day_light > 0.0) {
                     dot_product += day_light;
@@ -320,7 +321,7 @@ void main() {
                 }
 
                 if (in_shadow) {
-                    shadow_bright = day_light;
+                    shadow_bright = day_light*0.5 + 0.5 ;
                 }
             }
 
