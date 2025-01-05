@@ -24,7 +24,7 @@ void main() {
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
     vec3 final_col = vec3(0);
-    vec3 sky_col = vec3(0.2, 0.3, 0.4);
+    vec3 sky_col = vec3(0);
     int rays_per_pixel = 4;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
