@@ -19,7 +19,7 @@ float random(vec3 seed) {
 void main() {
     vec2 uv = (gl_FragCoord.xy / screen_size) * 2.0 - 1.0;
     //uv.y = -uv.y;
-    uv.x = uv.x * screen_size.x / screen_size.y;
+    uv.x = -uv.x * screen_size.x / screen_size.y;
 
     Ray ray = create_ray(cam_pos, cam_dir, uv); 
 
