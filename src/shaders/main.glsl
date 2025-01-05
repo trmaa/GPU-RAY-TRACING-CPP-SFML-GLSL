@@ -33,7 +33,7 @@ void main() {
 
 //SEE FOR SPHERES OR LIGHTS
 
-        int bounces = 6;
+        int bounces = 2;
         for (int bounce = 0; bounce < bounces; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal;

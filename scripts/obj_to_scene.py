@@ -23,7 +23,7 @@ def generate_triangle_lines(vertices, faces):
     return [
         f"    Triangle(vec3({v0[0]},{v0[1]},{v0[2]}), "
         f"vec3({v1[0]-v0[0]},{v1[1]-v0[1]},{v1[2]-v0[2]}), "
-        f"vec3({v2[0]-v0[0]},{v2[1]-v0[1]},{v2[2]-v0[2]}), vec3(1), 1)"
+        f"vec3({v2[0]-v0[0]},{v2[1]-v0[1]},{v2[2]-v0[2]}), vec3(1, 1, 0), 1)"
         for face in faces
         for v0, v1, v2 in [[vertices[face[0]], vertices[face[1]], vertices[face[2]]]]
     ]

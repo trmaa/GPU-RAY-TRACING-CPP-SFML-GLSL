@@ -54,12 +54,12 @@ public:
 		this->_shader.setUniform("cam_pos", camera.position());
 		this->_shader.setUniform("cam_dir", camera.angle());
 		this->_shader.setUniform("iTime", dt);
-        this->draw(this->_screen, &this->_shader);
+		this->draw(this->_screen, &this->_shader);
 
 		this->_fps_text.setString("fps: "+std::to_string(1 + (int)(1.f/dt)) + " (hz)");
-        this->draw(this->_fps_text);
+		this->draw(this->_fps_text);
 
-        this->display();
+		this->display();
 	}
 };
 
