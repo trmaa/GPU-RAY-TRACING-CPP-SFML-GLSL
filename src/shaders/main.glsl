@@ -3,7 +3,6 @@
 uniform vec2 screen_size;
 uniform vec3 cam_pos;
 uniform vec3 cam_dir;
-uniform float iTime;
 
 uniform sampler2D log_texture;
 
