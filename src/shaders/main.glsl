@@ -24,7 +24,7 @@ void main() {
 
     vec3 final_col = vec3(0);
     vec3 sky_col = vec3(0);
-    int rays_per_pixel = 1;
+    int rays_per_pixel = 3;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
         vec3 first_col = col;
@@ -32,7 +32,7 @@ void main() {
 
 //SEE FOR SPHERES OR LIGHTS
 
-        int bounces = 1;
+        int bounces = 3;
         for (int bounce = 0; bounce < bounces; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal;

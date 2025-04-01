@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "SFML/Window/WindowStyle.hpp"
 #include "camera.hpp"
 
 class Window: public sf::RenderWindow {
@@ -24,9 +25,9 @@ public:
 public:
 	Window(std::string title):
 		_title(title) {
-		float factor = 0.4f;
+		float factor = 1.f;
 
-		this->create(sf::VideoMode(1280*factor, 720*factor), this->_title, sf::Style::Fullscreen);
+		this->create(sf::VideoMode(1280*factor, 720*factor), this->_title, sf::Style::None);
 		this->setFramerateLimit(60);
 
 		this->_font.loadFromFile("./bin/fonts/pixelmix.ttf");
