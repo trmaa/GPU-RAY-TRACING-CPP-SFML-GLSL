@@ -14,7 +14,7 @@ struct Ray {
 
 Ray create_ray(vec3 o, vec3 angle_c, vec2 id) {
     Ray ray;
-    ray.far = 10 * screen_size.x / 1920;
+    ray.far = 1 * screen_size.x / 1920;
 
     angle_c.x += 3.14159/2;
     angle_c.y -= 3.14159/2;
@@ -186,7 +186,7 @@ void main() {
 
     vec3 final_col = vec3(0);
     vec3 sky_col = vec3(0);
-    int rays_per_pixel = 4;
+    int rays_per_pixel = 1;
     for (int j = 0; j < rays_per_pixel; j++) {
         vec3 col = vec3(0);
         vec3 first_col = col;
@@ -194,7 +194,7 @@ void main() {
 
 //SEE FOR SPHERES OR LIGHTS
 
-        int bounces = 3;
+        int bounces = 1;
         for (int bounce = 0; bounce < bounces; bounce++) {
             float closest_t = -1.0;
             vec3 closest_normal;

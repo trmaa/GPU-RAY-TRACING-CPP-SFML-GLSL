@@ -24,7 +24,9 @@ public:
 public:
 	Window(std::string title):
 		_title(title) {
-		this->create(sf::VideoMode(1280*0.8f, 720*0.8f), this->_title, sf::Style::Fullscreen);
+		float factor = 0.4f;
+
+		this->create(sf::VideoMode(1280*factor, 720*factor), this->_title, sf::Style::Fullscreen);
 		this->setFramerateLimit(60);
 
 		this->_font.loadFromFile("./bin/fonts/pixelmix.ttf");
